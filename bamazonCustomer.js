@@ -9,23 +9,15 @@ var connection = mysql.createConnection({
 	database: 'Bamazon'
 });
 
+// connect to db
 connection.connect(function(err) {
 	if (err) throw err;
 	// console.log('connected as ' + connection.threadId);
 });
 
-// todo: main menu
-// - show all products
-// - prompt for product id, quantity
-// - - if ID AND Quantity, place order else show error and return to main menu
-
-// todo: purchaseItem(id, qty)
-// - decrease item.quantity by qty
-// - if success, show user receipt
-
 // show customer menu
 function mainMenu() {
-    connection.query('SELECT * FROM products', function(err, res) {
+    connection.query('SELECT id, name, price FROM products', function(err, res) {
 		if (err) throw err;
 
         // show inventory
@@ -41,24 +33,62 @@ function mainMenu() {
                 validate: function(str) {
                     return !isNaN(parseInt(str));
                 }
-            },{
+            },
+            {
                 type: "input",
                 message: "Enter the quantity of the item you wish to purchase",
-                name: "quantity",
+                name: "stock_quantity",
                 validate: function(str) {
                     return !isNaN(parseInt(str));
                 }
             }
-        ]).then(processOrder(order));
+        ]).then(function(order) {
+            validateOrder(order);
+        });
 	});
 }
 
-// validate and process an order
-function processOrder(order) {
+// validate an order and process it if applicable
+function validateOrder(order) {
     connection.query('SELECT * FROM products WHERE id = ?', order.product_id, function(err, res) {
         if (err) throw err;
 
-        
+        if (res === null || res.length === 0) {
+            console.log('----------------------------------------');
+            console.log('No Results Found');
+            console.log('----------------------------------------');
+
+            mainMenu();
+        } else {
+            var orderQuantity = parseInt(order.stock_quantity);
+
+            if (res[0].stock_quantity >= orderQuantity) {
+                processOrder(order, res[0]);
+            } else {
+                console.log('----------------------------------------');
+                console.log('Insufficient quantity!');
+                console.log('----------------------------------------');
+
+                mainMenu();
+            }
+        }
+    });
+}
+
+// update database and display receipt
+function processOrder(order, inventory) {
+    connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', 
+    [parseInt(inventory.stock_quantity) - parseInt(order.stock_quantity), order.product_id], 
+    function(err, res) {
+        if (err) throw err;
+
+        var orderCost = parseInt(order.stock_quantity) * parseInt(inventory.price);
+
+        console.log('----------------------------------------');
+        console.log('You have purchased %s %s(s) for $%s.', order.stock_quantity, inventory.name, orderCost);
+        console.log('----------------------------------------');
+
+        connection.end();
     });
 }
 
