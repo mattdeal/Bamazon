@@ -1,11 +1,13 @@
 # Bamazon
 
-*Bamazon Customer*
+**Bamazon Customer**
 
 Allows users to view and purchase products.
 
-*Bamazon Manager*
+**Bamazon Manager**
 
 Allows users to view and update inventory.
 
-![Youtube](http://youtube.com)
+**Video of Working Application**
+
+[YouTube](https://www.youtube.com/watch?v=nZQmsCoSaKo)

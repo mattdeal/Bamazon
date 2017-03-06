@@ -94,7 +94,7 @@ function modifyInventory() {
 
 // update the product in the database
 function modifyProduct(product) {
-    console.log(product);
+    // console.log(product);
 
     connection.query(QUERY_MODIFY_STOCK, [product.stock_quantity, product.id], function(err, res) {
 		if (err) throw err;
@@ -144,7 +144,7 @@ function addProduct() {
             }
         }
     ]).then(function(product) {
-        console.log(product);
+        // console.log(product);
 
         // add to db
         connection.query(QUERY_ADD_PRODUCT, [product], function(err, res) {

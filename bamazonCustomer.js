@@ -61,6 +61,7 @@ function validateOrder(order) {
             mainMenu();
         } else {
             var orderQuantity = parseInt(order.stock_quantity);
+            // console.log(res);
 
             if (res[0].stock_quantity >= orderQuantity) {
                 processOrder(order, res[0]);
@@ -81,6 +82,8 @@ function processOrder(order, inventory) {
     [parseInt(inventory.stock_quantity) - parseInt(order.stock_quantity), order.product_id], 
     function(err, res) {
         if (err) throw err;
+
+        // console.log(res);
 
         var orderCost = parseInt(order.stock_quantity) * parseInt(inventory.price);
 
